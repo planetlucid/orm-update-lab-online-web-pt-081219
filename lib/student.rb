@@ -1,4 +1,6 @@
 require_relative "../config/environment.rb"
+require 'pry'
+require_relative "../config/environment.rb"
 
 class Student
 
@@ -43,7 +45,7 @@ class Student
 
   def self.create(name:, grade:)
     student = Student.new(name, grade)
-    students.save
+    student.save
   end
 
   def self.new_from_db(row)
