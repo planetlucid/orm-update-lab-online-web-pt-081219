@@ -6,15 +6,15 @@ class Student
 
   # Remember, you can access your database connection anywhere in this class
   #  with DB[:conn]  
-
+  
   attr_accessor :name, :grade, :id
-
+  
   def initialize(id=nil, name, grade)
     @id = id
     @name = name
     @grade = grade
   end
-
+  
   def self.create_table
     sql =  <<-SQL 
       CREATE TABLE IF NOT EXISTS students (
@@ -30,20 +30,24 @@ class Student
     sql = "DROP TABLE IF EXISTS students"
     DB[:conn].execute(sql) 
   end
-
+  
   def save
-    sql = <<-SQL
-      INSERT INTO students (name, grade) 
-      VALUES (?, ?)
-    SQL
+    if self.id
+      self.update
+    else
+      sql = <<-SQL
+        INSERT INTO students (name, grade) 
+        VALUES (?, ?)
+      SQL
 
-    DB[:conn].execute(sql, self.name, self.grade)
+      DB[:conn].execute(sql, self.name, self.grade)
 
-    @id = DB[:conn].execute("SELECT last_insert_rowid() FROM students")[0][0]
-
+      @id = DB[:conn].execute("SELECT last_insert_rowid() FROM students")[0][0]
+    end
+    
   end
 
- def self.create(name, grade)
+  def self.create(name, grade)
     student = Student.new(name, grade)
     student.save
   end
@@ -61,7 +65,7 @@ class Student
     sql = <<-SQL
       SELECT *
       FROM students
-      WHERE name == ?
+      WHERE name = ?
       LIMIT 1
     SQL
 
